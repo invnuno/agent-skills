@@ -34,6 +34,34 @@ Keep detailed instructions, examples, and domain-specific references in the rele
 python3 scripts/validate_skills.py
 ```
 
+## Environment Configuration
+
+A local `.env` file is optional. It is only needed for live Home Assistant REST helper workflows, such as running `skills/home-assistant-config/scripts/ha_api.py`.
+
+Create it from the committed example:
+
+```bash
+cp .env.example .env
+```
+
+Then edit `.env` with your Home Assistant URL and token:
+
+```dotenv
+HA_URL=http://homeassistant.local:8123
+HA_TOKEN=replace-with-your-long-lived-access-token
+```
+
+To create `HA_TOKEN` in Home Assistant:
+
+1. Open Home Assistant.
+2. Click your user profile or avatar.
+3. Scroll to **Long-lived access tokens**.
+4. Click **Create Token**.
+5. Use a descriptive name, such as `agent-skills-local`.
+6. Copy the token immediately and paste it into `.env`.
+
+The token is secret and is shown only once. Do not commit, print, or share the real value. `.env` is ignored by git; `.env.example` is safe to commit because it contains placeholders only.
+
 ## Install Or Link Skills
 
 The most portable source of truth is each `skills/<skill-name>/SKILL.md` directory. Different agents discover that directory from different locations.
@@ -126,7 +154,8 @@ cp -R /absolute/path/to/agent-skills/skills/<skill-name> .agents/skills/
 
 - Keep each skill self-contained under `skills/<skill-name>/`.
 - Keep root documentation generic and agent-focused.
-- Do not put secrets, `.env` values, tokens, hostnames, private IPs, or machine-specific config in committed files.
+- Do not put secrets, real `.env` values, tokens, hostnames, private IPs, or machine-specific config in committed files.
+- Keep `.env.example` limited to non-secret placeholders.
 - Prefer references over a large `SKILL.md` when details are only needed sometimes.
 - Run validation before committing.
 
