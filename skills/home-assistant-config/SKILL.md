@@ -1,12 +1,12 @@
 ---
-name: home-assistant-config-agent
+name: home-assistant-config
 description: Work safely on Home Assistant YAML repositories and live HA instances. Use for Home Assistant configuration, automations, scripts, scenes, Lovelace dashboards, themes, Assist sentence triggers, Ollama/LLM setup, REST validation, SSH deployment, and reload/restart decisions.
 compatibility: Requires a Home Assistant YAML repo. Live operations require HA_URL and HA_TOKEN or equivalent access; remote deployment may require SSH/SCP.
 metadata:
   version: "1.0.0"
 ---
 
-# Home Assistant Config Agent
+# Home Assistant Config
 
 Use this skill when asked to review, modify, validate, deploy, or troubleshoot Home Assistant YAML configuration, Lovelace dashboards, automations, Assist, or local AI integrations.
 
@@ -50,9 +50,9 @@ If `HA_URL` and `HA_TOKEN` are available, use the REST API for read-only inspect
 Use `scripts/ha_api.py` for common REST calls when available:
 
 ```bash
-python skills/home-assistant-config-agent/scripts/ha_api.py states
-python skills/home-assistant-config-agent/scripts/ha_api.py services
-python skills/home-assistant-config-agent/scripts/ha_api.py check-config
+python skills/home-assistant-config/scripts/ha_api.py states
+python skills/home-assistant-config/scripts/ha_api.py services
+python skills/home-assistant-config/scripts/ha_api.py check-config
 ```
 
 Read `references/rest-api-recipes.md` when a task needs live state, service calls, Assist pipeline tests, or Ollama config-entry inspection.
