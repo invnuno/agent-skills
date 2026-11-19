@@ -1,37 +1,56 @@
 # Repository Guidelines
 
-## Project Structure & Module Organization
+## Structure
 
-This repository stores portable Agent Skills. Each skill lives under `skills/<skill-name>/` and must include a `SKILL.md` file with YAML frontmatter. Optional deep reference material belongs in `skills/<skill-name>/references/`; reusable helper commands belong in `skills/<skill-name>/scripts/`. Keep human installation guidance in `README.md`, agent contributor rules in `AGENTS.md`, and skill-specific operating instructions inside the relevant skill directory.
+This repository contains portable Agent Skills. Every immediate child of
+`skills/` is one independently installable skill and must contain exactly one
+`SKILL.md` with matching lowercase kebab-case `name` frontmatter.
 
-Current layout:
+- Put activation metadata and the core workflow in `SKILL.md`.
+- Put conditional detail in one-level `references/` files and route to each
+  reference from `SKILL.md`.
+- Put deterministic reusable helpers in `scripts/` and keep executable files
+  executable.
+- Put optional client metadata in `agents/`; keep core instructions
+  client-neutral.
+- Keep installation and contributor documentation at the repository root. Do
+  not add per-skill READMEs.
 
-- `skills/home-assistant-config/` - Home Assistant skill package.
-- `scripts/validate_skills.py` - repository validator for skill metadata.
-- `README.md` - installation, linking, and development overview.
+## Commands
 
-## Build, Test, and Development Commands
+- `python3 scripts/validate_skills.py` validates every skill and audits tracked
+  content for privacy/security violations.
+- `python3 -m unittest discover -s tests` runs validator tests.
+- `python3 -m py_compile scripts/validate_skills.py` checks Python syntax.
+- `bash -n skills/*/scripts/*.sh` checks shell syntax when shell helpers exist.
+- `rg --files skills` inventories skill package contents.
 
-- `python3 scripts/validate_skills.py` - validates that every directory in `skills/` has a valid `SKILL.md`, matching `name`, and non-empty `description`.
-- `python3 -m py_compile scripts/validate_skills.py` - checks the validator for Python syntax errors after edits.
-- `rg --files skills` - quickly inspect skill package contents before changing structure.
+There is no application build step.
 
-There is no build step; this repository is documentation and lightweight Python tooling.
+## Style
 
-## Coding Style & Naming Conventions
+Write concise, task-oriented Markdown. Descriptions must explain both capability
+and activation boundary. Add only instructions that change agent decisions.
+Prefer focused references over a large entrypoint.
 
-Use Markdown for skill instructions and keep sections task-oriented. Skill directory names and `name` frontmatter must match and use lowercase kebab case, for example `home-assistant-config`. Keep `description` concise and activation-focused. For Python, follow the existing style: 4-space indentation, type hints where useful, `pathlib.Path` for filesystem paths, and small validation functions with explicit error messages.
+Python uses four-space indentation, type hints, `pathlib.Path`, small functions,
+and explicit errors. Shell uses Bash strict mode, quoted variables, `--help`,
+non-interactive interfaces, dry runs for stateful operations, and actionable
+exit statuses.
 
-Follow Agent Skills progressive disclosure: keep `SKILL.md` focused on activation and core workflow, move conditional or detailed procedures into one-level `references/`, and avoid auxiliary files such as per-skill `README.md` unless explicitly required by the skill format.
+## Safety and privacy
 
-## Testing Guidelines
+Never commit secrets, real `.env` values, personal paths, private hostnames or
+addresses, email addresses, device serials, private image checksums, setup
+state, logs, raw images, downloaded binaries, or machine-specific config.
+Standard platform paths are allowed when technically required. Validators must
+never print a suspected secret value.
 
-Run `python3 scripts/validate_skills.py` before committing any skill changes. When editing Python scripts, also run `python3 -m py_compile` on the changed file. For new skills, confirm the validator accepts the frontmatter and manually review that optional `references/` and `scripts/` files are reachable from `SKILL.md` only when needed.
+Inspect exact targets before destructive operations, preserve authorization
+boundaries, and test stateful helpers through dry runs or disposable fixtures.
 
-## Commit & Pull Request Guidelines
+## Commits and pull requests
 
-Recent commits use short, imperative messages such as `Rename Home Assistant skill` and `Document agent skill setup`. Follow that style: one focused change per commit, with a clear verb and object. Pull requests should describe the changed skill or tooling, list validation commands run, and call out any new assumptions, external dependencies, or security-sensitive behavior.
-
-## Security & Configuration Tips
-
-Do not commit secrets, tokens, `.env` values, private hostnames, private IPs, or machine-specific config. Keep live credentials and deployment details out of skills unless they are generic placeholders or documented as environment variables.
+Use short imperative commit subjects and keep commits focused. Pull requests
+must identify changed skills/tooling, validation commands, dependencies,
+security-sensitive behavior, and unresolved assumptions.

@@ -5,8 +5,9 @@ Load this reference before deploying YAML, dashboard assets, Lovelace resources,
 ## Rules
 
 - Back up every remote file before overwriting it.
-- Upload to `/tmp` first.
-- Install into `/config` with permissions appropriate for the HA environment.
+- Upload to a configured staging directory first (commonly `/tmp`).
+- Install into the configured Home Assistant directory (commonly `/config`)
+  with permissions appropriate for the environment.
 - Use `scp -O` if SFTP is unavailable.
 - Validate config before reload or restart.
 - Reload the smallest possible domain.
@@ -14,17 +15,31 @@ Load this reference before deploying YAML, dashboard assets, Lovelace resources,
 
 ## Example deployment
 
+Set explicit inputs in the environment rather than embedding a local account,
+host, key, or directory in the command:
+
+```bash
+: "${HA_SSH_TARGET:?Set the SSH account and host}"
+: "${HA_SSH_KEY:?Set the SSH private-key path}"
+: "${HA_CONFIG_DIR:=/config}"
+: "${HA_STAGING_DIR:=/tmp}"
+LOCAL_FILE=${LOCAL_FILE:?Set the local file to deploy}
+REMOTE_NAME=${REMOTE_NAME:?Set the destination filename}
+```
+
 Upload:
 
 ```bash
-scp -O -i ~/.ssh/homeassistant homeassistant-config/automations.yaml user@host:/tmp/automations.yaml.agent
+scp -O -i "$HA_SSH_KEY" "$LOCAL_FILE" \
+  "$HA_SSH_TARGET:$HA_STAGING_DIR/$REMOTE_NAME.agent"
 ```
 
 Install with backup:
 
 ```bash
-ssh -i ~/.ssh/homeassistant user@host \
-  "sudo cp /config/automations.yaml /config/automations.yaml.backup-YYYYMMDD-topic && sudo install -m 0644 -o root -g root /tmp/automations.yaml.agent /config/automations.yaml"
+BACKUP_SUFFIX=$(date -u +%Y%m%dT%H%M%SZ)
+ssh -i "$HA_SSH_KEY" "$HA_SSH_TARGET" \
+  "sudo cp '$HA_CONFIG_DIR/$REMOTE_NAME' '$HA_CONFIG_DIR/$REMOTE_NAME.backup-$BACKUP_SUFFIX' && sudo install -m 0644 -o root -g root '$HA_STAGING_DIR/$REMOTE_NAME.agent' '$HA_CONFIG_DIR/$REMOTE_NAME'"
 ```
 
 Validate:

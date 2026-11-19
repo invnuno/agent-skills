@@ -1,7 +1,6 @@
 ---
 name: home-assistant-config
 description: Work safely on Home Assistant YAML repositories and live HA instances. Use for Home Assistant configuration, automations, scripts, scenes, Lovelace dashboards, themes, Assist sentence triggers, Ollama/LLM setup, REST validation, SSH deployment, and reload/restart decisions.
-compatibility: Requires a Home Assistant YAML repo. Live operations require HA_URL and HA_TOKEN or equivalent access; remote deployment may require SSH/SCP.
 metadata:
   version: "1.0.0"
 ---
@@ -9,6 +8,13 @@ metadata:
 # Home Assistant Config
 
 Use this skill when asked to review, modify, validate, deploy, or troubleshoot Home Assistant YAML configuration, Lovelace dashboards, automations, Assist, or local AI integrations.
+
+## Environment
+
+Local review requires a Home Assistant YAML repository. Live operations use
+`HA_URL` and `HA_TOKEN` or equivalent authorized access; remote deployment may
+also require SSH/SCP. If live access is unavailable, continue with local
+validation and state the limitation.
 
 ## Core workflow
 

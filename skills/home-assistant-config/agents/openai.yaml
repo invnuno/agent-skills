@@ -1,0 +1,4 @@
+interface:
+  display_name: "Home Assistant Config"
+  short_description: "Safely edit and validate Home Assistant YAML"
+  default_prompt: "Use $home-assistant-config to review and safely update this Home Assistant configuration."

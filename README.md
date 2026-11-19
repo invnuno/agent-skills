@@ -1,169 +1,118 @@
 # Agent Skills
 
-Portable Agent Skills for coding agents that support the `SKILL.md` open format.
+Portable, version-controlled skills for coding agents that support the open
+[`SKILL.md` format](https://agentskills.io/specification).
 
-## Purpose
+## Available skills
 
-This repository is a personal collection of reusable Agent Skills. It is meant to be cloned, linked, or copied into coding agents that understand the `SKILL.md` format.
+| Skill | Use it for |
+| --- | --- |
+| `home-assistant-config` | Reviewing, validating, and safely deploying Home Assistant YAML, Lovelace, Assist, and related configuration. |
+| `kobo-ereader-maintenance` | Diagnosing Kobo devices, backing up or restoring internal cards, recovering a Kobo Nia, and configuring NickelMenu or a Home Assistant dashboard. |
 
-Skill-specific usage belongs inside each skill directory. The repository root only documents repository layout, validation, and how to make the skills discoverable by common agents.
+Each skill is self-contained under `skills/<skill-name>/`. Install only the
+skills relevant to the agent and project.
 
-## Structure
+## Repository structure
 
 ```text
 skills/
-└── <skill-name>/
+├── home-assistant-config/
+│   ├── SKILL.md
+│   ├── agents/openai.yaml
+│   ├── references/
+│   └── scripts/
+└── kobo-ereader-maintenance/
     ├── SKILL.md
+    ├── agents/openai.yaml
     ├── references/
     └── scripts/
 ```
 
-Each skill follows the Agent Skills format:
+`SKILL.md` contains discovery metadata and the core workflow. Detailed or
+conditional guidance belongs in `references/`; deterministic helpers belong in
+`scripts/`. Optional client metadata belongs in `agents/` and does not change
+the portable skill instructions.
 
-- `SKILL.md` with YAML frontmatter.
-- `name` matches the parent directory.
-- `description` explains when the skill should activate.
-- `references/` contains optional on-demand documentation.
-- `scripts/` contains optional reusable tooling.
+## Install or link skills
 
-Keep detailed instructions, examples, and domain-specific references in the relevant skill directory, not in this root README.
-
-## Validate
+Clone this repository, then set a local variable rather than embedding the
+clone location in configuration or documentation:
 
 ```bash
-python3 scripts/validate_skills.py
+AGENT_SKILLS_ROOT=$(pwd)
 ```
 
-## Environment Configuration
+### Codex and portable workspace discovery
 
-A local `.env` file is optional. It is only needed for live Home Assistant REST helper workflows, such as running `skills/home-assistant-config/scripts/ha_api.py`.
+Codex discovers project skills from `.agents/skills/` and user skills from
+`~/.agents/skills/`. Link a skill while developing:
 
-Create it from the committed example:
+```bash
+mkdir -p .agents/skills
+ln -s "$AGENT_SKILLS_ROOT/skills/kobo-ereader-maintenance" \
+  .agents/skills/kobo-ereader-maintenance
+```
+
+For user-wide discovery, use `~/.agents/skills/` as the destination. Restart or
+begin a new agent session after installing or updating a skill.
+
+### Other coding agents
+
+Agents may use different discovery directories. Copy or link the complete
+skill directory—never only `SKILL.md`—into the directory documented by the
+client. Common project-local locations include:
+
+- Claude Code: `.claude/skills/`
+- Gemini CLI and OpenCode portable discovery: `.agents/skills/`
+- OpenCode native discovery: `.opencode/skills/`
+
+The core skill packages do not depend on a specific coding-agent runtime.
+
+## Optional local environment
+
+The Home Assistant helper can read credentials from process environment
+variables or an explicitly selected environment file. For local development:
 
 ```bash
 cp .env.example .env
 ```
 
-Then edit `.env` with your Home Assistant URL and token:
+`.env` is ignored and must never be committed, printed, or shared. The Kobo
+skill does not require repository-level credentials.
 
-```dotenv
-HA_URL=http://homeassistant.local:8123
-HA_TOKEN=replace-with-your-long-lived-access-token
-```
+## Validate
 
-To create `HA_TOKEN` in Home Assistant:
-
-1. Open Home Assistant.
-2. Click your user profile or avatar.
-3. Scroll to **Long-lived access tokens**.
-4. Click **Create Token**.
-5. Use a descriptive name, such as `agent-skills-local`.
-6. Copy the token immediately and paste it into `.env`.
-
-The token is secret and is shown only once. Do not commit, print, or share the real value. `.env` is ignored by git; `.env.example` is safe to commit because it contains placeholders only.
-
-## Install Or Link Skills
-
-The most portable source of truth is each `skills/<skill-name>/SKILL.md` directory. Different agents discover that directory from different locations.
-
-### Codex
-
-Codex supports skills as part of its customization system. For local development, keep this repository as the source of truth and point Codex at the desired `SKILL.md` path through the active Codex skills configuration for your environment.
-
-Example per-skill config entry:
-
-```toml
-[[skills.config]]
-path = "/absolute/path/to/agent-skills/skills/<skill-name>/SKILL.md"
-enabled = true
-```
-
-Use an absolute path and replace `<skill-name>` with the skill directory you want to expose.
-
-### Gemini CLI
-
-Gemini CLI discovers skills from user and workspace skill directories. You can install from a repository or link a local skill while developing.
-
-Install from GitHub:
+Install the development dependency in an isolated environment, then run all
+checks:
 
 ```bash
-gemini skills install https://github.com/<user>/<repo>.git
+python3 -m venv .venv
+. .venv/bin/activate
+python3 -m pip install -r requirements-dev.txt
+python3 -m unittest discover -s tests
+python3 scripts/validate_skills.py
 ```
 
-Link a local skill:
+The validator checks skill structure, references, optional Codex metadata,
+script permissions, and tracked content for common secrets, personal paths,
+private addresses, and unsafe artifacts. It reports rule identifiers and
+locations without echoing suspected secret values.
 
-```bash
-gemini skills link /absolute/path/to/agent-skills/skills/<skill-name>
-```
+## Development rules
 
-During a Gemini CLI session:
-
-```text
-/skills list
-/skills reload
-```
-
-Gemini also supports `.agents/skills/` as a workspace-compatible location.
-
-### Claude Code
-
-Claude Code skills are filesystem artifacts under `.claude/skills/`.
-
-Project-local install:
-
-```bash
-mkdir -p .claude/skills
-cp -R /absolute/path/to/agent-skills/skills/<skill-name> .claude/skills/
-```
-
-Global install:
-
-```bash
-mkdir -p ~/.claude/skills
-cp -R /absolute/path/to/agent-skills/skills/<skill-name> ~/.claude/skills/
-```
-
-Restart or refresh Claude Code after adding or updating skills if it does not detect changes automatically.
-
-### OpenCode
-
-OpenCode searches several locations, including native OpenCode paths and compatible `.agents` / `.claude` paths.
-
-Project-local install:
-
-```bash
-mkdir -p .opencode/skills
-cp -R /absolute/path/to/agent-skills/skills/<skill-name> .opencode/skills/
-```
-
-Global install:
-
-```bash
-mkdir -p ~/.config/opencode/skills
-cp -R /absolute/path/to/agent-skills/skills/<skill-name> ~/.config/opencode/skills/
-```
-
-Portable workspace install:
-
-```bash
-mkdir -p .agents/skills
-cp -R /absolute/path/to/agent-skills/skills/<skill-name> .agents/skills/
-```
-
-## Development Rules
-
-- Keep each skill self-contained under `skills/<skill-name>/`.
-- Keep root documentation generic and agent-focused.
-- Do not put secrets, real `.env` values, tokens, hostnames, private IPs, or machine-specific config in committed files.
-- Keep `.env.example` limited to non-secret placeholders.
-- Prefer references over a large `SKILL.md` when details are only needed sometimes.
-- Run validation before committing.
+- Follow progressive disclosure and keep each skill self-contained.
+- Use placeholders or environment variables instead of personal paths,
+  addresses, hostnames, device identifiers, or credentials.
+- Platform-defined paths may be used when they are intrinsic to the workflow
+  and are clearly documented.
+- Do not commit `.env`, setup state, logs, raw disk images, update archives,
+  databases, or downloaded application binaries.
+- Run validation before every commit. See [CONTRIBUTING.md](CONTRIBUTING.md)
+  and [SECURITY.md](SECURITY.md).
 
 ## Sources
 
-- https://agentskills.io/specification
-- https://agentskills.io/skill-creation/best-practices
-- https://agentskills.io/clients
-- https://geminicli.com/docs/cli/using-agent-skills/
-- https://code.claude.com/docs/en/agent-sdk/skills
-- https://opencode.ai/docs/skills
+- [Agent Skills specification](https://agentskills.io/specification)
+- [Agent Skills authoring practices](https://agentskills.io/skill-creation/best-practices)
+- [OpenAI skill installation guidance](https://developers.openai.com/api/reference/cli)
