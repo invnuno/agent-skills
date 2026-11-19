@@ -1,0 +1,4 @@
+interface:
+  display_name: "Kobo E-Reader Maintenance"
+  short_description: "Recover and customize Kobo e-readers safely"
+  default_prompt: "Use $kobo-ereader-maintenance to diagnose, recover, or configure my Kobo e-reader safely."
