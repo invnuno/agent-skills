@@ -3,7 +3,7 @@ name: kobo-ereader-maintenance
 description: Diagnose and maintain Kobo e-readers at the system level, including USB detection, raw microSD backup or restore, Kobo Nia N306 recovery, NickelMenu configuration, and Kobo Home Assistant dashboard installation or layout changes. Use for recovery and customization tasks, not ordinary ebook transfers or library management.
 license: MIT
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # Kobo E-Reader Maintenance
@@ -22,6 +22,7 @@ The knowledge is client-neutral. Bundled helpers target Linux and require Bash, 
 - For the Home Assistant dashboard setup tool in Podman, read [references/dashboard-podman.md](references/dashboard-podman.md).
 - For adding or changing NickelMenu entries, read [references/nickelmenu.md](references/nickelmenu.md).
 - For dashboard pages, cards, display, sleep, battery, or Home Assistant settings, read [references/dashboard-layout.md](references/dashboard-layout.md).
+- For repeated source development, Podman previews, ARM builds, SSH deployment, logs, or rollback, read [references/dashboard-development.md](references/dashboard-development.md). Prefer a repository-provided `tools/kobo-dashboard` workflow when present.
 - For failures after installation or firmware updates, read [references/troubleshooting.md](references/troubleshooting.md).
 
 ## Safety invariants
@@ -41,6 +42,8 @@ The knowledge is client-neutral. Bundled helpers target Linux and require Bash, 
 - `scripts/kobo-card-image.sh inspect|backup|restore|prepare-nia-recovery ...` handles guarded raw-card operations. Read its `--help` and use `--dry-run` before a mutating mode.
 - `scripts/run-dashboard-setup-podman.sh --app-dir DIR [--kobo-mount PATH]` runs a downloaded dashboard setup binary in a compatible Fedora container.
 - `scripts/verify-dashboard-install.sh --mount PATH [--json]` verifies installation without exposing configuration contents.
+
+For a source repository that provides `tools/kobo-dashboard`, use its `doctor` and `plan` commands before selecting a workflow. Do not reconstruct its Podman, build, SSH, or checksum commands manually. Deployment and rollback remain separately authorized mutations even when the project tool supports them.
 
 Use paths relative to this skill directory when invoking bundled scripts. Do not substitute repository-local legacy scripts unless the user explicitly asks to use them.
 
