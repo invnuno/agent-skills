@@ -13,8 +13,9 @@ This repository contains portable Agent Skills. Every immediate child of
   executable.
 - Put optional client metadata in `agents/`; keep core instructions
   client-neutral.
-- Keep installation and contributor documentation at the repository root. Do
-  not add per-skill READMEs.
+- Keep installation and contributor documentation at the repository root. A
+  concise per-skill README is allowed for package onboarding or architecture
+  when useful; keep detailed operational instructions in references.
 
 ## Commands
 

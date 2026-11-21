@@ -10,9 +10,11 @@
 4. Use placeholders and environment variables for user-specific input.
 5. Run the full validation suite before committing.
 
-Do not add per-skill READMEs, copied vendor manuals, downloaded binaries, live
-configuration, or credentials. Keep automatic skill selection enabled unless a
-skill explicitly requires opt-in invocation.
+A concise per-skill README is optional for package onboarding or architecture
+when it adds value; do not duplicate reference procedures. Do not add copied
+vendor manuals, downloaded binaries, live configuration, or credentials. Keep
+automatic skill selection enabled unless a skill explicitly requires opt-in
+invocation.
 
 ## Validate
 

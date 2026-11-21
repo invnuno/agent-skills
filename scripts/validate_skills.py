@@ -163,9 +163,6 @@ def validate_skill(path: Path, root: Path) -> list[Issue]:
     nested_manifests = [candidate for candidate in path.rglob("SKILL.md") if candidate != skill_file]
     for nested in nested_manifests:
         errors.append(issue("skill.nested", nested.relative_to(root), "nested SKILL.md is not allowed"))
-    if (path / "README.md").exists():
-        errors.append(issue("skill.readme", (path / "README.md").relative_to(root), "per-skill README files are not allowed"))
-
     for match in LOCAL_RESOURCE_RE.finditer(skill_file.read_text(encoding="utf-8")):
         resource = match.group(1).rstrip(".,;:)")
         candidate = (path / resource).resolve()

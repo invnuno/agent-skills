@@ -56,6 +56,14 @@ class ValidatorTests(unittest.TestCase):
 
         self.assertEqual(validate_skills.validate_repository(self.root), [])
 
+    def test_optional_skill_readme_is_allowed(self) -> None:
+        (self.skill / "README.md").write_text(
+            "# Sample Skill\n\nPackage overview and integration notes.\n",
+            encoding="utf-8",
+        )
+
+        self.assertEqual(validate_skills.validate_repository(self.root), [])
+
     def test_invalid_name_and_frontmatter_are_reported(self) -> None:
         self.write_skill(name="Sample Skill", compatibility="unsupported")
 

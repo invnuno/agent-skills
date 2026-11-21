@@ -24,12 +24,15 @@ skills/
 │   └── scripts/
 └── kobo-ereader-maintenance/
     ├── SKILL.md
+    ├── README.md (optional)
     ├── agents/openai.yaml
     ├── references/
     └── scripts/
 ```
 
-`SKILL.md` contains discovery metadata and the core workflow. Detailed or
+`SKILL.md` contains discovery metadata and the core workflow. A concise
+per-skill `README.md` may explain package setup, integration, or architecture;
+it should link to rather than duplicate operational references. Detailed or
 conditional guidance belongs in `references/`; deterministic helpers belong in
 `scripts/`. Optional client metadata belongs in `agents/` and does not change
 the portable skill instructions.
